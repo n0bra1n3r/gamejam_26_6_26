@@ -28,8 +28,7 @@ public class PlayerAction : MonoBehaviour
             attackTimeElapsed += Time.deltaTime;
             if (attackTimeElapsed >= weaponReloadTime)
             {
-                weapon.Reload();
-                isReloaded = true;
+                isReloaded = weapon.Reload();
             }
         }
     }

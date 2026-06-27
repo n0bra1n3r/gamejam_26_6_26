@@ -2,6 +2,6 @@ using UnityEngine;
 
 public interface IWeapon
 {
-    void Reload();
+    bool Reload();
     void Fire();
 }

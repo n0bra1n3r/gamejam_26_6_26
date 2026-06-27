@@ -335,6 +335,7 @@ GameObject:
   - component: {fileID: 759108796}
   - component: {fileID: 759108797}
   - component: {fileID: 759108798}
+  - component: {fileID: 759108799}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -450,11 +451,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9faf09a25fbb27083bfc554e34239c81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bow
-  wakeEffect: {fileID: 2100000, guid: 5a5f6eac0bb82ab62a11309df08abda7, type: 2}
   arrowPrefab: {fileID: 993826939424645915, guid: 0621fc06a9964352190b5435f8e87c31, type: 3}
   arrowOffset: {x: 0, y: 1, z: 1}
   arrowSpeed: 20
   arrowRange: 50
+  reloadSpeed: 1
+--- !u!114 &759108799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759108790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e571f30180325fae5960ede0c0713576, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WakeEffect
+  LightRadius: 4
+  DistortionAmplitude: 0.15
+  DistortionFrequency: 10
+  DistortionSpeed: 2
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
