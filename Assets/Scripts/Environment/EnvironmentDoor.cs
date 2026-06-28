@@ -17,10 +17,9 @@ public class DoorCollision : MonoBehaviour
         _startTime = Time.time;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (_hasTriggered || !collision.gameObject.CompareTag(playerTag)) return;
-
+        if (_hasTriggered || !other.CompareTag(playerTag)) return;
         _hasTriggered = true;
 
         float completionTime = Time.time - _startTime;
