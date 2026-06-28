@@ -153,8 +153,8 @@ TerrainCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_ProvidesContacts: 1
-  m_Enabled: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: 6e548a84c406d4874bb9db71c2b96a12, type: 2}
   m_EnableTreeColliders: 1
@@ -628,6 +628,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   walkSpeed: 4
   gravity: -9.81
+  yOffset: 0
 --- !u!143 &759108794
 CharacterController:
   m_ObjectHideFlags: 0
@@ -722,7 +723,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e571f30180325fae5960ede0c0713576, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WakeEffect
-  LightRadius: 4
+  _Radius: 4
+  WakeCamera: {fileID: 0}
   DistortionAmplitude: 0.15
   DistortionFrequency: 10
   DistortionSpeed: 2

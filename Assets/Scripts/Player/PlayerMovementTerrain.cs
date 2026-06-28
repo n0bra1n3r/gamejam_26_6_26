@@ -2,7 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(IPlayerInput))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovementTerrain : MonoBehaviour
 {
     [SerializeField] private float walkSpeed = 4f;
     [SerializeField] private float gravity = -9.81f;
