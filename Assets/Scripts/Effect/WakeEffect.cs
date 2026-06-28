@@ -9,13 +9,28 @@ public class WakeEffect : MonoBehaviour, IEffect
 
     [SerializeField] private float _Radius = 4;
 
-    public Color Color = new Color(1, 1, 0, 0.1f);
+    public Camera WakeCamera;
     public float DistortionAmplitude = 0.15f;
     public float DistortionFrequency = 10.0f;
     public float DistortionSpeed = 2.0f;
 
+    private RenderTexture wakeTexture;
+    private int lastScreenWidth;
+    private int lastScreenHeight;
+
+    public void Awake()
+    {
+        wakeTexture = new RenderTexture(Screen.width, Screen.height, 24);
+    }
     void Update()
     {
+        if (Screen.width != lastScreenWidth || Screen.height != lastScreenHeight)
+        {
+            ResizeTexture();
+        }
+
+        WakeCamera.targetTexture = wakeTexture;
+
         Vector3 StartPos = StartWorldPos;
         StartPos.y = 0;
         Vector3 EndPos = EndWorldPos;
@@ -24,9 +39,19 @@ public class WakeEffect : MonoBehaviour, IEffect
         Shader.SetGlobalVector("_WakeShader_StartWorldPos", StartPos);
         Shader.SetGlobalVector("_WakeShader_EndWorldPos", EndPos);
         Shader.SetGlobalFloat("_WakeShader_Radius", Radius);
-        Shader.SetGlobalVector("_WakeShader_Color", Color);
         Shader.SetGlobalFloat("_WakeShader_DistortionAmplitude", DistortionAmplitude);
         Shader.SetGlobalFloat("_WakeShader_DistortionFrequency", DistortionFrequency);
         Shader.SetGlobalFloat("_WakeShader_DistortionSpeed", DistortionSpeed);
+        Shader.SetGlobalTexture("_WakeShader_WakeTexture", wakeTexture);
+    }
+    private void ResizeTexture()
+    {
+        wakeTexture.Release();
+
+        wakeTexture.width = Screen.width;
+        wakeTexture.height = Screen.height;
+
+        lastScreenWidth = Screen.width;
+        lastScreenHeight = Screen.height;
     }
 }
