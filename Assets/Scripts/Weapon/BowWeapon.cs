@@ -8,6 +8,7 @@ public class BowWeapon : MonoBehaviour, IWeapon
     [SerializeField] private float arrowSpeed = 10;
     [SerializeField] private float arrowRange = 50;
     [SerializeField] private float reloadSpeed = 1;
+
     private List<IEffect> effects = new List<IEffect>();
     private List<float> effectRadii = new List<float>();
     private Vector3 effectOrigin;
@@ -15,9 +16,10 @@ public class BowWeapon : MonoBehaviour, IWeapon
     private GameObject reloadingArrow;
     private GameObject firingArrow;
     private float reloadProgress = 0;
+
     public bool Reload()
     {
-        if (firingArrow || reloadingArrow) return false;
+        if (firingArrow != null || reloadingArrow != null) return false;
         Vector3 arrowPosition = transform.position + arrowOffset;
         UpdateEffectRadii(reloadProgress);
         UpdateEffectPositions(arrowPosition, arrowPosition);
@@ -30,7 +32,7 @@ public class BowWeapon : MonoBehaviour, IWeapon
     }
     public void Fire()
     {
-        if (firingArrow || !reloadingArrow) return;
+        if (firingArrow != null || reloadingArrow == null) return;
         reloadingArrow.transform.parent = null;
         firingArrow = reloadingArrow;
         reloadingArrow = null;

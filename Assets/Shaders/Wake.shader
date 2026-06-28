@@ -22,7 +22,8 @@ Shader "Custom/Wake"
 
             float4 _WakeShader_StartWorldPos;
             float4 _WakeShader_EndWorldPos;
-            float _WakeShader_LightRadius;
+            float _WakeShader_Radius;
+            float4 _WakeShader_Color;
             float _WakeShader_DistortionAmplitude;
             float _WakeShader_DistortionFrequency;
             float _WakeShader_DistortionSpeed;
@@ -63,10 +64,10 @@ Shader "Custom/Wake"
                 float2 noiseUV = float2(t * _WakeShader_DistortionFrequency, _Time.y * _WakeShader_DistortionSpeed);
                 float noise = SmoothNoise2D(noiseUV) * 2.0 - 1.0;
 
-                float distortedRadius = _WakeShader_LightRadius + (noise * _WakeShader_DistortionAmplitude);
+                float distortedRadius = _WakeShader_Radius + (noise * _WakeShader_DistortionAmplitude);
 
                 float4 color = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord).rgba;
-                return lerp(float4(0, 0, 0, 1), color, saturate(distortedRadius - dist));
+                return lerp(color, float4(_WakeShader_Color.rgb, 1), saturate(distortedRadius - dist) * _WakeShader_Color.a);
             }
 
             ENDHLSL
