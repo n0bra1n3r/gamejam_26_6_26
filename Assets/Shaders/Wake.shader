@@ -20,9 +20,10 @@ Shader "Custom/Wake"
             #pragma vertex Vert
             #pragma fragment Frag
 
-            float4 _WakeShader_StartWorldPos;
-            float4 _WakeShader_EndWorldPos;
-            float _WakeShader_Radius;
+            float4 _WakeShader_StartWorldPos[8];
+            float4 _WakeShader_EndWorldPos[8];
+            float _WakeShader_Radius[8];
+            uint _WakeShader_WakeCount;
             float _WakeShader_DistortionAmplitude;
             float _WakeShader_DistortionFrequency;
             float _WakeShader_DistortionSpeed;
@@ -58,17 +59,20 @@ Shader "Custom/Wake"
                 #endif
                 float3 worldPos = ComputeWorldSpacePosition(UV, depth, UNITY_MATRIX_I_VP);
 
-                float t;
-                float dist = DistanceToSegment(worldPos, _WakeShader_StartWorldPos, _WakeShader_EndWorldPos, t);
-
-                float2 noiseUV = float2(t * _WakeShader_DistortionFrequency, _Time.y * _WakeShader_DistortionSpeed);
-                float noise = SmoothNoise2D(noiseUV) * 2.0 - 1.0;
-
-                float distortedRadius = _WakeShader_Radius + (noise * _WakeShader_DistortionAmplitude);
+                float wakeFactor = 1;
+                for (uint i = 0; i < _WakeShader_WakeCount; i++)
+                {
+                    float edge = 0;
+                    float offset = DistanceToSegment(worldPos, _WakeShader_StartWorldPos[i], _WakeShader_EndWorldPos[i], edge);
+                    float2 noiseUV = float2(edge * _WakeShader_DistortionFrequency, _Time.y * _WakeShader_DistortionSpeed);
+                    float noise = SmoothNoise2D(noiseUV) * 2.0 - 1.0;
+                    float distortedRadius = _WakeShader_Radius[i] + (noise * _WakeShader_DistortionAmplitude);
+                    wakeFactor = min(saturate(offset - distortedRadius), wakeFactor);
+                }
 
                 float4 sceneColor = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.texcoord).rgba;
                 float4 wakeColor = SAMPLE_TEXTURE2D(_WakeShader_WakeTexture, sampler_LinearClamp, input.texcoord).rgba;
-                return lerp(sceneColor, wakeColor, saturate(distortedRadius - dist));
+                return lerp(wakeColor, sceneColor, wakeFactor);
             }
 
             ENDHLSL

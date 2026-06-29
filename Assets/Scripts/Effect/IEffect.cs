@@ -1,8 +1,15 @@
 using UnityEngine;
+using System.Collections.Generic;
+
+public struct WorldSegment
+{
+    public Vector3 Start;
+    public Vector3 End;
+    public float Radius;
+}
 
 public interface IEffect
 {
-    Vector3 StartWorldPos { get; set; }
-    Vector3 EndWorldPos { get; set; }
+    List<WorldSegment> WorldSegments { get; set; }
     float Radius { get; set; }
 }

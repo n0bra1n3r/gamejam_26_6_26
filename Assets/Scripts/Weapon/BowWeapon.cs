@@ -9,35 +9,49 @@ public class BowWeapon : MonoBehaviour, IWeapon
     [SerializeField] private float arrowRange = 50;
     [SerializeField] private float reloadSpeed = 1;
 
+    private class ArrowInfo
+    {
+        public Vector3 Origin;
+        public Vector3 WakeOrigin;
+        public Vector3 Direction;
+        public GameObject Arrow;
+    }
+
     private List<IEffect> effects = new List<IEffect>();
     private List<float> effectRadii = new List<float>();
-    private Vector3 effectOrigin;
-    private Vector3 arrowDirection;
     private GameObject reloadingArrow;
-    private GameObject firingArrow;
+    private List<ArrowInfo> firingArrows = new List<ArrowInfo>();
     private float reloadProgress = 0;
 
     public bool Reload()
     {
-        if (firingArrow != null || reloadingArrow != null) return false;
+        if (reloadingArrow != null) return false;
+
         Vector3 arrowPosition = transform.position + arrowOffset;
-        UpdateEffectRadii(reloadProgress);
-        UpdateEffectPositions(arrowPosition, arrowPosition);
+
+        if (reloadProgress == 0) SpawnWakeEffect(arrowPosition);
+        UpdateWakeEffect(arrowPosition, arrowPosition, reloadProgress);
+
         reloadProgress += Time.deltaTime * reloadSpeed;
         if (reloadProgress < 1) return false;
-        UpdateEffectRadii(1);
+
         reloadProgress = 0;
         reloadingArrow = Instantiate(arrowPrefab, arrowPosition, transform.rotation, transform);
         return true;
     }
     public void Fire()
     {
-        if (firingArrow != null || reloadingArrow == null) return;
+        if (reloadingArrow == null) return;
+
         reloadingArrow.transform.parent = null;
-        firingArrow = reloadingArrow;
+        firingArrows.Add(new ArrowInfo
+        {
+            Origin = reloadingArrow.transform.position,
+            WakeOrigin = reloadingArrow.transform.position,
+            Direction = transform.forward,
+            Arrow = reloadingArrow
+        });
         reloadingArrow = null;
-        effectOrigin = firingArrow.transform.position;
-        arrowDirection = transform.forward;
     }
     void Awake()
     {
@@ -49,54 +63,75 @@ public class BowWeapon : MonoBehaviour, IWeapon
     }
     void Update()
     {
-        if (firingArrow)
+        int arrowIndex = 0;
+        while (firingArrows.Count > arrowIndex)
         {
-            Vector3 arrowPosition = firingArrow.transform.position;
-            Vector3 arrowVelocity = arrowDirection * Time.deltaTime * arrowSpeed;
+            ArrowInfo arrowInfo = firingArrows[arrowIndex];
 
-            UpdateEffectPositions(effectOrigin, firingArrow.transform.position);
+            Vector3 arrowPosition = arrowInfo.Arrow.transform.position;
+            Vector3 arrowVelocity = arrowInfo.Direction * Time.deltaTime * arrowSpeed;
 
-            if (Vector3.Distance(transform.position, arrowPosition) > arrowRange)
+            if (Vector3.Distance(arrowInfo.Origin, arrowPosition) > arrowRange)
             {
-                Vector3 toArrowPosition = Vector3.Normalize(arrowPosition - transform.position);
-                Vector3 toEffectOrigin = Vector3.Normalize(arrowPosition - effectOrigin);
+                Vector3 toArrowPosition = Vector3.Normalize(arrowPosition - arrowInfo.Origin);
+                Vector3 toWakePosition = Vector3.Normalize(arrowPosition - arrowInfo.WakeOrigin);
 
-                if (Vector3.Dot(toEffectOrigin, toArrowPosition) > 0)
+                if (Vector3.Dot(toWakePosition, toArrowPosition) > 0)
                 {
-                    effectOrigin += arrowVelocity;
+                    arrowInfo.WakeOrigin += arrowVelocity;
+                    UpdateWakeEffect(arrowInfo.WakeOrigin, arrowPosition, 1, arrowIndex);
+                    arrowIndex++;
                 }
                 else
                 {
-                    Destroy(firingArrow);
-                    firingArrow = null;
+                    firingArrows.RemoveAt(arrowIndex);
+                    Destroy(arrowInfo.Arrow);
+                    RemoveWakeEffect(arrowIndex);
                 }
             }
             else
             {
-                firingArrow.transform.position += arrowVelocity;
-            }
-        }
-        else
-        {
-            if (reloadingArrow)
-            {
-                UpdateEffectPositions(reloadingArrow.transform.position, reloadingArrow.transform.position);
+                arrowPosition += arrowVelocity;
+                UpdateWakeEffect(arrowInfo.WakeOrigin, arrowPosition, 1, arrowIndex);
+                arrowInfo.Arrow.transform.position = arrowPosition;
+                arrowIndex++;
             }
         }
     }
-    private void UpdateEffectPositions(Vector3 start, Vector3 end)
+    private void SpawnWakeEffect(Vector3 origin)
     {
         foreach (var effect in effects)
         {
-            effect.StartWorldPos = start;
-            effect.EndWorldPos = end;
+            List<WorldSegment> segments = effect.WorldSegments ?? new List<WorldSegment>();
+            segments.Add(new WorldSegment{ Start = origin, End = origin, Radius = 0 });
+            effect.WorldSegments = segments;
         }
     }
-    private void UpdateEffectRadii(float frac)
+    private void UpdateWakeEffect(Vector3 start, Vector3 end, float radiusFraction, int index = -1)
     {
         for (int i = 0; i < effects.Count; i++)
         {
-            effects[i].Radius = effectRadii[i] * frac;
+            IEffect effect = effects[i];
+            float effectRadius = effectRadii[i];
+
+            List<WorldSegment> segments = effect.WorldSegments ?? new List<WorldSegment>();
+            segments[index >= 0 ? index : segments.Count - 1] = new WorldSegment{
+                Start = start,
+                End = end,
+                Radius = effectRadius * radiusFraction
+            };
+            effect.WorldSegments = segments;
+        }
+    }
+    private void RemoveWakeEffect(int index)
+    {
+        foreach (var effect in effects)
+        {
+            List<WorldSegment> segments = effect.WorldSegments;
+            if (segments == null || segments.Count <= index) continue;
+
+            segments.RemoveAt(index);
+            effect.WorldSegments = segments;
         }
     }
 }

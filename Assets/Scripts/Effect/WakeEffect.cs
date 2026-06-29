@@ -1,13 +1,12 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [ExecuteAlways]
 public class WakeEffect : MonoBehaviour, IEffect
 {
-    public Vector3 StartWorldPos { get; set; }
-    public Vector3 EndWorldPos { get; set; }
+    public List<WorldSegment> WorldSegments { get; set; }
     public float Radius { get { return _Radius; } set { _Radius = value; } }
-
-    [SerializeField] private float _Radius = 4;
+    public float _Radius = 4;
 
     public Camera WakeCamera;
     public float DistortionAmplitude = 0.15f;
@@ -31,14 +30,38 @@ public class WakeEffect : MonoBehaviour, IEffect
 
         WakeCamera.targetTexture = wakeTexture;
 
-        Vector3 StartPos = StartWorldPos;
-        StartPos.y = 0;
-        Vector3 EndPos = EndWorldPos;
-        EndPos.y = -Radius;
+        if (WorldSegments == null || WorldSegments.Count == 0) return;
 
-        Shader.SetGlobalVector("_WakeShader_StartWorldPos", StartPos);
-        Shader.SetGlobalVector("_WakeShader_EndWorldPos", EndPos);
-        Shader.SetGlobalFloat("_WakeShader_Radius", Radius);
+        List<Vector4> startPosArray = new List<Vector4>();
+        List<Vector4> endPosArray = new List<Vector4>();
+        List<float> radiusArray = new List<float>();
+
+        int wakeCount = Mathf.Min(WorldSegments.Count, 8);
+
+        for (int i = 0; i < wakeCount; i++)
+        {
+            float radius = WorldSegments[i].Radius;
+            radius = radius >= 0 ? radius : _Radius;
+            Vector3 endPos = WorldSegments[i].End;
+            endPos.y = -radius;
+            Vector3 startPos = WorldSegments[i].Start;
+            startPos.y = 0;
+            startPosArray.Add(new Vector4(startPos.x, startPos.y, startPos.z, 1));
+            endPosArray.Add(new Vector4(endPos.x, endPos.y, endPos.z, 1));
+            radiusArray.Add(radius);
+        }
+
+        while (startPosArray.Count < 8)
+        {
+            startPosArray.Add(Vector4.zero);
+            endPosArray.Add(Vector4.zero);
+            radiusArray.Add(0f);
+        }
+
+        Shader.SetGlobalVectorArray($"_WakeShader_StartWorldPos", startPosArray);
+        Shader.SetGlobalVectorArray($"_WakeShader_EndWorldPos", endPosArray);
+        Shader.SetGlobalFloatArray($"_WakeShader_Radius", radiusArray);
+        Shader.SetGlobalInt("_WakeShader_WakeCount", wakeCount);
         Shader.SetGlobalFloat("_WakeShader_DistortionAmplitude", DistortionAmplitude);
         Shader.SetGlobalFloat("_WakeShader_DistortionFrequency", DistortionFrequency);
         Shader.SetGlobalFloat("_WakeShader_DistortionSpeed", DistortionSpeed);
