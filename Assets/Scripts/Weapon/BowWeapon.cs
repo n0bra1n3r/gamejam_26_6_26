@@ -97,6 +97,14 @@ public class BowWeapon : MonoBehaviour, IWeapon
                 arrowIndex++;
             }
         }
+        if (reloadingArrow != null)
+        {
+            UpdateWakeEffect(
+                reloadingArrow.transform.position,
+                reloadingArrow.transform.position,
+                reloadProgress > 0 ? reloadProgress : 1
+            );
+        }
     }
     private void SpawnWakeEffect(Vector3 origin)
     {
