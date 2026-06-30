@@ -3,8 +3,16 @@ using System.Collections.Generic;
 
 public class BowWeapon : MonoBehaviour, IWeapon
 {
+    [SerializeField] private GameObject bowObject;
+    [SerializeField] private Vector3 bowLoadPosition = Vector3.zero;
+    [SerializeField] private Vector3 bowLoadRotation = Vector3.zero;
+    [SerializeField] private Vector3 bowFirePosition = Vector3.zero;
+    [SerializeField] private Vector3 bowFireRotation = Vector3.zero;
     [SerializeField] private GameObject arrowPrefab;
-    [SerializeField] private Vector3 arrowOffset = Vector3.zero;
+    [SerializeField] private Vector3 arrowRestPosition = Vector3.zero;
+    [SerializeField] private Vector3 arrowRestRotation = Vector3.zero;
+    [SerializeField] private Vector3 arrowDrawPosition = Vector3.zero;
+    [SerializeField] private Vector3 arrowDrawRotation = Vector3.zero;
     [SerializeField] private float arrowSpeed = 10;
     [SerializeField] private float arrowRange = 50;
     [SerializeField] private float reloadSpeed = 1;
@@ -22,39 +30,75 @@ public class BowWeapon : MonoBehaviour, IWeapon
     private GameObject reloadingArrow;
     private List<ArrowInfo> firingArrows = new List<ArrowInfo>();
     private float reloadProgress = 0;
+    private Animator bowAnimator;
 
     public bool Reload()
     {
-        if (reloadingArrow != null) return false;
+        if (reloadProgress < 1)
+        {
+            reloadProgress += Time.deltaTime * reloadSpeed;
 
-        Vector3 arrowPosition = transform.position + arrowOffset;
+            if (reloadProgress < 0.5)
+            {
+                float lowerProgress = reloadProgress * 2;
+                bowObject.transform.localPosition = Vector3.Lerp(bowFirePosition, bowLoadPosition, lowerProgress);
+                bowObject.transform.localRotation = Quaternion.Lerp(Quaternion.Euler(bowFireRotation), Quaternion.Euler(bowLoadRotation), lowerProgress);
+            }
+            else
+            {
+                if (reloadingArrow == null)
+                {
+                    reloadingArrow = Instantiate(arrowPrefab, bowObject.transform);
+                    reloadingArrow.transform.localPosition = arrowRestPosition;
+                    reloadingArrow.transform.localRotation = Quaternion.Euler(arrowRestRotation);
+                    SpawnWakeEffect(reloadingArrow.transform.position);
+                }
 
-        if (reloadProgress == 0) SpawnWakeEffect(arrowPosition);
-        UpdateWakeEffect(arrowPosition, arrowPosition, reloadProgress);
+                float raiseProgress = (reloadProgress - 0.5f) * 2;
+                bowObject.transform.localPosition = Vector3.Lerp(bowLoadPosition, bowFirePosition, raiseProgress);
+                bowObject.transform.localRotation = Quaternion.Lerp(Quaternion.Euler(bowLoadRotation), Quaternion.Euler(bowFireRotation), raiseProgress);
+                reloadingArrow.transform.localPosition = Vector3.Lerp(arrowRestPosition, arrowDrawPosition, raiseProgress);
+                reloadingArrow.transform.localRotation = Quaternion.Lerp(Quaternion.Euler(arrowRestRotation), Quaternion.Euler(arrowDrawRotation), raiseProgress);
 
-        reloadProgress += Time.deltaTime * reloadSpeed;
-        if (reloadProgress < 1) return false;
+                bowAnimator.speed = 0;
+                bowAnimator.Play(bowAnimator.GetCurrentAnimatorStateInfo(0).fullPathHash, -1, raiseProgress * 0.6f);
+                bowAnimator.Update(0);
+            }
 
-        reloadProgress = 0;
-        reloadingArrow = Instantiate(arrowPrefab, arrowPosition, transform.rotation, transform);
+            if (reloadingArrow != null)
+            {
+                UpdateWakeEffect(reloadingArrow.transform.position, reloadingArrow.transform.position, reloadProgress);
+            }
+
+            return false;
+        }
+
         return true;
     }
     public void Fire()
     {
-        if (reloadingArrow == null) return;
-
-        reloadingArrow.transform.parent = null;
-        firingArrows.Add(new ArrowInfo
+        if (reloadProgress >= 1)
         {
-            Origin = reloadingArrow.transform.position,
-            WakeOrigin = reloadingArrow.transform.position,
-            Direction = transform.forward,
-            Arrow = reloadingArrow
-        });
-        reloadingArrow = null;
+            bowAnimator.speed = 1;
+
+            reloadingArrow.transform.parent = null;
+            firingArrows.Add(new ArrowInfo
+            {
+                Origin = reloadingArrow.transform.position,
+                WakeOrigin = reloadingArrow.transform.position,
+                Direction = reloadingArrow.transform.up,
+                Arrow = reloadingArrow
+            });
+
+            reloadingArrow = null;
+            reloadProgress = 0;
+        }
     }
     void Awake()
     {
+        bowAnimator = bowObject.GetComponent<Animator>();
+        bowAnimator.speed = 0;
+
         foreach (var effect in GetComponents<IEffect>())
         {
             effects.Add(effect);
@@ -102,7 +146,7 @@ public class BowWeapon : MonoBehaviour, IWeapon
             UpdateWakeEffect(
                 reloadingArrow.transform.position,
                 reloadingArrow.transform.position,
-                reloadProgress > 0 ? reloadProgress : 1
+                reloadProgress
             );
         }
     }
