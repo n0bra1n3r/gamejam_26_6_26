@@ -13,5 +13,6 @@ public class KeyPickup : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+        Destroy(gameObject);
     }
 }
