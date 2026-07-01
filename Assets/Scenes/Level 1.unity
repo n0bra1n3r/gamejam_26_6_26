@@ -942,6 +942,7 @@ GameObject:
   - component: {fileID: 270480290}
   - component: {fileID: 270480289}
   - component: {fileID: 270480288}
+  - component: {fileID: 270480297}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -1140,6 +1141,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &270480297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270480287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be94d39bd025042dd91e73842f7c509f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DieUponHit
+  expectedProjectileName: Arrow(Clone)
+  deathEffectPrefab: {fileID: 0}
 --- !u!1001 &276901948
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2642,7 +2657,7 @@ TerrainCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: 6e548a84c406d4874bb9db71c2b96a12, type: 2}
   m_EnableTreeColliders: 1
@@ -4417,6 +4432,7 @@ GameObject:
   - component: {fileID: 1157012144}
   - component: {fileID: 1157012143}
   - component: {fileID: 1157012142}
+  - component: {fileID: 1157012152}
   m_Layer: 0
   m_Name: EnemyBoss
   m_TagString: Untagged
@@ -4630,6 +4646,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1157012152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157012141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be94d39bd025042dd91e73842f7c509f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DieUponHit
+  expectedProjectileName: Arrow(Clone)
+  deathEffectPrefab: {fileID: 0}
 --- !u!1 &1168079230
 GameObject:
   m_ObjectHideFlags: 0
