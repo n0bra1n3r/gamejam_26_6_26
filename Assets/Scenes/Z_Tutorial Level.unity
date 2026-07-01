@@ -361,7 +361,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 1600408344}
+  m_TargetTexture: {fileID: 1708339505}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
@@ -2063,7 +2063,7 @@ MonoBehaviour:
   bowLoadRotation: {x: -45, y: 180, z: 60}
   bowFirePosition: {x: 0.1, y: -0.5, z: 2}
   bowFireRotation: {x: 0, y: 180, z: 0}
-  arrowPrefab: {fileID: 6151164542963547521, guid: e8aec94cc1f96d82ab7f520bd34eb5e8, type: 3}
+  arrowPrefab: {fileID: 7845342396733454310, guid: 44148eebe8e08acdea3556e0641827ac, type: 3}
   arrowRestPosition: {x: 2.2, y: 0.6, z: -9}
   arrowRestRotation: {x: 270, y: -6, z: 0}
   arrowDrawPosition: {x: 0.8, y: 0.6, z: 12.24}
@@ -4726,43 +4726,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c525f897e9d82eb4ead5baf465a5ffdd, type: 3}
   m_PrefabInstance: {fileID: 668934768}
   m_PrefabAsset: {fileID: 0}
---- !u!84 &1600408344
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 6
-  m_Width: 1185
-  m_Height: 719
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 92
-  m_ColorFormat: 4
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 1
-  m_UseDynamicScale: 0
-  m_UseDynamicScaleExplicit: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!1001 &1605377872
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5107,6 +5070,43 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c525f897e9d82eb4ead5baf465a5ffdd, type: 3}
+--- !u!84 &1708339505
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 6
+  m_Width: 1185
+  m_Height: 719
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 92
+  m_ColorFormat: 4
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_UseDynamicScaleExplicit: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!1001 &1717450180
 PrefabInstance:
   m_ObjectHideFlags: 0
