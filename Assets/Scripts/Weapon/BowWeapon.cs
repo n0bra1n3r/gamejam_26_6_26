@@ -112,6 +112,13 @@ public class BowWeapon : MonoBehaviour, IWeapon
         {
             ArrowInfo arrowInfo = firingArrows[arrowIndex];
 
+            if (arrowInfo.Arrow == null)
+            {
+                firingArrows.RemoveAt(arrowIndex);
+                RemoveWakeEffect(arrowIndex);
+                continue;
+            }
+
             Vector3 arrowPosition = arrowInfo.Arrow.transform.position;
             Vector3 arrowVelocity = arrowInfo.Direction * Time.deltaTime * arrowSpeed;
 
