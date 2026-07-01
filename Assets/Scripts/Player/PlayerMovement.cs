@@ -1,23 +1,26 @@
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(IPlayerInput))]
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float walkSpeed = 4f;
     [SerializeField] private float gravity = -9.81f;
-
     [Tooltip("Adjust this if your character's feet sink into the ground or float above it.")]
     [SerializeField] private float yOffset = 0f;
 
     private CharacterController characterController;
     private IPlayerInput input;
     private Vector3 velocity;
+    private AudioSource audioSource;
+    private float stepPlayTime = 0;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
         input = GetComponent<IPlayerInput>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -30,6 +33,14 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 direction = (transform.right * input.MoveInput.x) + (transform.forward * input.MoveInput.y);
         characterController.Move(direction * walkSpeed * Time.deltaTime);
+        if (!audioSource.isPlaying && direction.magnitude > 0) audioSource.Play();
+        if (audioSource.isPlaying &&
+            ((audioSource.time >= stepPlayTime && (audioSource.time - stepPlayTime) >= 0.4f) ||
+                (audioSource.time < stepPlayTime && (audioSource.time + (audioSource.clip.length - stepPlayTime)) >= 0.4f)))
+        {
+            audioSource.Pause();
+            stepPlayTime = audioSource.time;
+        }
     }
 
     private void HandleVerticalPosition()

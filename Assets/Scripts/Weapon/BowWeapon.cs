@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(AudioSource))]
 public class BowWeapon : MonoBehaviour, IWeapon
 {
     [SerializeField] private GameObject bowObject;
@@ -16,6 +17,7 @@ public class BowWeapon : MonoBehaviour, IWeapon
     [SerializeField] private float arrowSpeed = 10;
     [SerializeField] private float arrowRange = 50;
     [SerializeField] private float reloadSpeed = 1;
+    [SerializeField] private AudioClip fireSound;
 
     private class ArrowInfo
     {
@@ -31,6 +33,7 @@ public class BowWeapon : MonoBehaviour, IWeapon
     private List<ArrowInfo> firingArrows = new List<ArrowInfo>();
     private float reloadProgress = 0;
     private Animator bowAnimator;
+    private AudioSource audioSource;
 
     public bool Reload()
     {
@@ -82,6 +85,8 @@ public class BowWeapon : MonoBehaviour, IWeapon
         {
             bowAnimator.speed = 1;
 
+            audioSource.PlayOneShot(fireSound);
+
             reloadingArrow.transform.parent = null;
             reloadingArrow.GetComponent<Collider>().enabled = true;
             firingArrows.Add(new ArrowInfo
@@ -100,6 +105,7 @@ public class BowWeapon : MonoBehaviour, IWeapon
     {
         bowAnimator = bowObject.GetComponent<Animator>();
         bowAnimator.speed = 0;
+        audioSource = GetComponent<AudioSource>();
 
         foreach (var effect in GetComponents<IEffect>())
         {
