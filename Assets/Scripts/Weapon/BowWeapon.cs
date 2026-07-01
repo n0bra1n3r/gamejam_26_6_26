@@ -49,6 +49,7 @@ public class BowWeapon : MonoBehaviour, IWeapon
                 if (reloadingArrow == null)
                 {
                     reloadingArrow = Instantiate(arrowPrefab, bowObject.transform);
+                    reloadingArrow.GetComponent<Collider>().enabled = false;
                     reloadingArrow.transform.localPosition = arrowRestPosition;
                     reloadingArrow.transform.localRotation = Quaternion.Euler(arrowRestRotation);
                     SpawnWakeEffect(reloadingArrow.transform.position);
@@ -82,6 +83,7 @@ public class BowWeapon : MonoBehaviour, IWeapon
             bowAnimator.speed = 1;
 
             reloadingArrow.transform.parent = null;
+            reloadingArrow.GetComponent<Collider>().enabled = true;
             firingArrows.Add(new ArrowInfo
             {
                 Origin = reloadingArrow.transform.position,
