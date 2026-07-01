@@ -79,14 +79,22 @@ public class MoveTo : MonoBehaviour
     }
 
     private void HandlePatrolMovement()
-    {
-        if (waypoints == null || waypoints.Length == 0) return;
-
-        if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {
-            GoToNextWaypoint();
+            if (waypoints == null || waypoints.Length == 0) return;
+
+            if (!agent.pathPending)
+            {
+                float threshold = Mathf.Max(agent.stoppingDistance, 1f);
+
+                if (agent.remainingDistance <= threshold)
+                {
+                    if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+                    {
+                        GoToNextWaypoint();
+                    }
+                }
+            }
         }
-    }
 
     private void GoToNextWaypoint()
     {
