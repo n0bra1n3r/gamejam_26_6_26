@@ -1,9 +1,18 @@
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class DieUponHit : MonoBehaviour
 {
     [SerializeField] private string expectedProjectileName = "Arrow(Clone)";
     [SerializeField] private GameObject deathEffectPrefab;
+    [SerializeField] private AudioClip hitSound;
+
+    private AudioSource audioSource;
+
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -19,6 +28,8 @@ public class DieUponHit : MonoBehaviour
 
     private void HandleDeathAndCleanup(GameObject projectile)
     {
+        audioSource.PlayOneShot(hitSound);
+
         if (deathEffectPrefab != null)
         {
             Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
